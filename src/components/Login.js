@@ -69,7 +69,7 @@ const Login = () => {
 
       setLoading(false);
 
-      enqueueSnackbar("Loggedin Successfully", { variant:"success"});
+      enqueueSnackbar("Logged in Successfully", { variant:"success"});
       history.push("/");
     } catch (e) {
       setLoading(false);

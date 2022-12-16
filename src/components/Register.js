@@ -54,7 +54,7 @@ const Register = () => {
         username: formData.username,
         password: formData.password
       });
-      setLoading(false);
+      // setLoading(false);
       setFormData({
         username: "",
         password: "",
@@ -63,8 +63,8 @@ const Register = () => {
       enqueueSnackbar("Registerd Successfully", {variant: "success"});
 
       history.push("/login");
-    } catch (e) {
       setLoading(false);
+    } catch (e) {
       if(e.response && e.response.status === 400) {
         enqueueSnackbar(e.response.data.message, {variant: "error"});
       } else {
