@@ -6,7 +6,7 @@ import React, { useState } from "react";
 import { useHistory, Link } from "react-router-dom";
 import { config } from "../App";
 import Footer from "./Footer";
-import Header from "./Header";
+import Header from "./Header"; 
 import "./Login.css";
 
 const Login = () => {

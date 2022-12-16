@@ -9,7 +9,7 @@ const Header = ({ children, hasHiddenAuthButtons }) => {
   const history = useHistory();
     return (
       <Box className="header">
-        <Stack spacing={2} className="form">
+
         <Box className="header-title">
         
             <img src="logo_light.svg" alt="QKart-icon"></img>
@@ -37,7 +37,6 @@ const Header = ({ children, hasHiddenAuthButtons }) => {
         >
           LOGOUT
         </Button>
-      </Stack>
       </Box>
     );
 };
