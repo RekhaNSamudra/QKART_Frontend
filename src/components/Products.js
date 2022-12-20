@@ -176,7 +176,7 @@ const token = localStorage.getItem("token");
 
 useEffect(() => {
   performAPICall();
-});
+}, []);
 
 const addToCart = () => {
 
@@ -187,21 +187,20 @@ const addToCart = () => {
       <Header>
         {/* TODO: CRIO_TASK_MODULE_PRODUCTS - Display search bar in the header for Products page */}
         <TextField
-        className="search-desktop"
-        size="small"
-        fullWidth
-        InputProps={{
-          className: "search",
-          endAdornment: (
-            <InputAdornment position="end">
-              <Search color="primary" />
-            </InputAdornment>
-          ),
-        }}
-        placeholder="Search for items/categories"
-        name="search"
-        onChange={(e) => debounceSearch(e, debounceTimeout)}
-      />
+          className="search-desktop"
+          size="small"
+          InputProps={{
+            className: "search",
+            endAdornment: (
+              <InputAdornment position="end">
+                <Search color="primary" />
+              </InputAdornment>
+            ),
+          }}
+          placeholder="Search for items/categories"
+          name="search"
+          onChange={(e) => debounceSearch(e, debounceTimeout)}
+        />
       </Header>
 
       {/* Search view for mobiles */}
