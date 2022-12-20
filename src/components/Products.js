@@ -12,17 +12,18 @@ import React, { useEffect, useState } from "react";
 import { config } from "../App";
 import Footer from "./Footer";
 import Header from "./Header";
+import ProductCard from "./ProductCard";
 import "./Products.css";
 
 
 
-const Products = () => {
+// const Products = () => {
   
-  // return (
-  //   <div>
-  //     <Header>
+//   return (
+//     <div>
+//       <Header>
       
-  //     </Header>
+//       </Header>
 
 // Definition of Data Structures used
 /**
@@ -40,6 +41,17 @@ const Products = () => {
 const Products = () => {
 
   // TODO: CRIO_TASK_MODULE_PRODUCTS - Fetch products data and store it
+const [items, setItems] = useState([]);
+
+const { enqueueSnackbar} = useSnackbar();
+
+const [debounceTimeout, setDebounceTimeout] = useState(0);
+const [isLoading, setLoading] = useState(false);
+const [Products, setProducts] = useState([]);
+const [filteredProducts, setFilteredProducts] = useState([]);
+
+const token = localStorage.getItem("token");
+
   /**
    * Make API call to get the products list and store it to display the products
    *
@@ -77,6 +89,31 @@ const Products = () => {
    * }
    */
   const performAPICall = async () => {
+
+    setLoading(true);
+
+    try{
+      const response = await axios.get(`${config.endpoint}/products`);
+
+      setLoading(false);
+
+      setProducts(response.data);
+      setFilteredProducts(response.data);
+      return response.data;
+    } catch (e) {
+      setLoading(false);
+      if(e.response && e.response.status === 500) {
+        enqueueSnackbar(e.response.data.message, {variant: "error"});
+        return null;
+      } else {
+        enqueueSnackbar(
+          "Could not fetch products. Check that the backend is running, reachable and returns valid JSON.",
+          {
+            variant: "error",
+          }
+        );
+      }
+    }
   };
 
   // TODO: CRIO_TASK_MODULE_PRODUCTS - Implement search logic
@@ -94,6 +131,31 @@ const Products = () => {
    *
    */
   const performSearch = async (text) => {
+    try {
+      const response = await axios.get(
+        `${config.endpoint}/products/search?value=${text}`
+      );
+      setFilteredProducts(response.data);
+      return response.data;
+    } catch (e) {
+      if(e.response) {
+        if(e.response.status === 404) {
+          setFilteredProducts([]);
+        }
+
+        if(e.response.status === 500) {
+          enqueueSnackbar(e.response.data.message, { variant: "error" });
+          setFilteredProducts([products]);
+        }
+      } else {
+        enqueueSnackbar(
+          "Could not fetch products. Check that the backend is running, reachable and returns valid JSON.",
+          {
+            variant: "error",
+          }
+        );
+      }
+    }
   };
 
   // TODO: CRIO_TASK_MODULE_PRODUCTS - Optimise API calls with debounce search implementation
@@ -109,19 +171,54 @@ const Products = () => {
    *
    */
   const debounceSearch = (event, debounceTimeout) => {
+    const value = event.target.value;
+    
+    if(debounceTimeout) {
+      clearTimeout(debounceTimeout);
+    }
+    const timeout = setTimeout(() => {
+      performSearch(value);
+    }, 500);
+
+    setDebounceTimeout(timeout);
   };
 
+  useEffect(() => {
+    const onLoadHandler = async () => {
+      const productsData = await performAPICall();
+      const cartData = await fetchCart(token);
+      const cartDetails = await generateCartItemsFrom(cartData, productsData);
+      setItems(cartDetails);
+    };
+    onLoadHandler();
+  }, []);
 
-
-
-
-
+  const renderCart = () => {
+    if(token) {
+      return <Cart/>
+    }
+  }
 
   return (
     <div>
       <Header>
         {/* TODO: CRIO_TASK_MODULE_PRODUCTS - Display search bar in the header for Products page */}
-
+        <TextField
+        className="search-desktop"
+        size="small"
+        fullWidth
+        InputProps={{
+          className: "search",
+          endAdornment: (
+            <InputAdornment position="end">
+              <Search color="primary" />
+            </InputAdornment>
+          ),
+        }}
+        placeholder="Search for items/categories"
+        name="search"
+        onChange={(e) => debounceSearch(e, debounceTimeout)}
+      />
       </Header>
 
       {/* Search view for mobiles */}
@@ -147,12 +244,51 @@ const Products = () => {
                to your door step
              </p>
            </Box>
-         </Grid>
+
+           {isLoading ? (
+            <Box className="loading">
+              <CircularProgress />
+              <h4> Loading Products...</h4>
+            </Box>
+           ):(
+            <Grid container marginY="1rem" paddingX="1rem" spacing={2}>
+              {filteredProducts.length ? (
+                filteredProducts.map((product) => (
+                  <Grid item xs={6} md={3} key={prompt._id}>
+                    <ProductCard
+                    product={product}
+                    handleAddToCart={async () => {
+                      await addToCart(
+                        token,
+                        items,
+                        products,
+                        product._id,
+                        1,
+                        {
+                          preventDuplicate: true,
+                        }
+                      );
+                    }}
+                    />
+                  </Grid>
+                ))
+              ):(
+                <Box className="loading">
+                  <SentimentDissatisfied color="action" />
+                  <h4 style={{ color: "#636363" }}>
+                    No products found
+                  </h4>
+                  </Box>
+              )}
+              </Grid>
+           )}
+           </Grid>
+           {renderCart()}
        </Grid>
       <Footer />
     </div>
   );
-}
-}
+};
+
 
 export default Products;

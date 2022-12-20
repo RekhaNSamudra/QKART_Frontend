@@ -14,11 +14,24 @@ function App() {
       {/* TODO: CRIO_TASK_MODULE_LOGIN - To add configure routes and their mapping */}
           {/* <Register /> */}
           <BrowserRouter>
-          {/* <Switch> */}
-         <Route exact path="/"><Products/></Route>
-         <Route path="/login" ><Login/></Route>
-         <Route path="/register" ><Register/></Route>
-         {/* </Switch> */}
+          <Switch>
+         <Route exact path="/">
+          <Products/>
+          </Route>
+
+         <Route path="/login" >
+          <Login/>
+          </Route>
+
+         <Route path="/register" >
+          <Register/>
+          </Route>
+
+          <Route path="/" >
+          <Products />
+          </Route>
+
+         </Switch>
        </BrowserRouter>
        
           {/* <Login /> */}
