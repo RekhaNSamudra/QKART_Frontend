@@ -15,9 +15,6 @@ function App() {
           {/* <Register /> */}
           <BrowserRouter>
           <Switch>
-         <Route exact path="/">
-          <Products/>
-          </Route>
 
          <Route path="/login" >
           <Login/>

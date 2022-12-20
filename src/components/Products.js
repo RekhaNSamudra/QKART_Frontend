@@ -16,15 +16,6 @@ import ProductCard from "./ProductCard";
 import "./Products.css";
 
 
-
-// const Products = () => {
-  
-//   return (
-//     <div>
-//       <Header>
-      
-//       </Header>
-
 // Definition of Data Structures used
 /**
  * @typedef {Object} Product - Data on product available to buy
@@ -47,7 +38,7 @@ const { enqueueSnackbar} = useSnackbar();
 
 const [debounceTimeout, setDebounceTimeout] = useState(0);
 const [isLoading, setLoading] = useState(false);
-const [Products, setProducts] = useState([]);
+const [products, setProducts] = useState([]);
 const [filteredProducts, setFilteredProducts] = useState([]);
 
 const token = localStorage.getItem("token");
@@ -172,7 +163,7 @@ const token = localStorage.getItem("token");
    */
   const debounceSearch = (event, debounceTimeout) => {
     const value = event.target.value;
-    
+
     if(debounceTimeout) {
       clearTimeout(debounceTimeout);
     }
@@ -183,21 +174,13 @@ const token = localStorage.getItem("token");
     setDebounceTimeout(timeout);
   };
 
-  useEffect(() => {
-    const onLoadHandler = async () => {
-      const productsData = await performAPICall();
-      const cartData = await fetchCart(token);
-      const cartDetails = await generateCartItemsFrom(cartData, productsData);
-      setItems(cartDetails);
-    };
-    onLoadHandler();
-  }, []);
+useEffect(() => {
+  performAPICall();
+});
 
-  const renderCart = () => {
-    if(token) {
-      return <Cart/>
-    }
-  }
+const addToCart = () => {
+
+}
 
   return (
     <div>
@@ -237,7 +220,11 @@ const token = localStorage.getItem("token");
         name="search"
       />
        <Grid container>
-         <Grid item className="product-grid">
+         <Grid 
+         item
+         xs={12}
+         md={token && products.length ? 9 : 12}
+         className="product-grid">
            <Box className="hero">
              <p className="hero-heading">
                India’s <span className="hero-highlight">FASTEST DELIVERY</span>{" "}
@@ -254,7 +241,7 @@ const token = localStorage.getItem("token");
             <Grid container marginY="1rem" paddingX="1rem" spacing={2}>
               {filteredProducts.length ? (
                 filteredProducts.map((product) => (
-                  <Grid item xs={6} md={3} key={prompt._id}>
+                  <Grid item xs={6} md={3} key={product._id}>
                     <ProductCard
                     product={product}
                     handleAddToCart={async () => {
@@ -283,12 +270,11 @@ const token = localStorage.getItem("token");
               </Grid>
            )}
            </Grid>
-           {renderCart()}
+          
        </Grid>
       <Footer />
     </div>
   );
 };
-
 
 export default Products;
