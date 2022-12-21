@@ -48,6 +48,13 @@ import "./Cart.css";
  *
  */
 export const generateCartItemsFrom = (cartData, productsData) => {
+  if(!cartData) return;
+
+  const nextCart = cartData.map((item) => ({
+    ...item,
+    ...productsData.find((product) => item.productId === product._id),
+  }));
+  return nextCart;
 };
 
 /**
@@ -61,6 +68,10 @@ export const generateCartItemsFrom = (cartData, productsData) => {
  *
  */
 export const getTotalCartValue = (items = []) => {
+  if(!items.length) return 0;
+
+  const total = items.map((item) => item.cost * item.qty).reduce((total, n) => total + n);
+  return total;
 };
 
 
@@ -82,7 +93,11 @@ const ItemQuantity = ({
   value,
   handleAdd,
   handleDelete,
+  isReadOnly,
 }) => {
+  if(isReadOnly) {
+    return <Box>Qty: {value}</Box>;
+  }
   return (
     <Stack direction="row" alignItems="center">
       <IconButton size="small" color="primary" onClick={handleDelete}>
@@ -116,7 +131,16 @@ const Cart = ({
   products,
   items = [],
   handleQuantity,
+  hasCheckoutButton = false,
+  isReadOnly = false,
 }) => {
+
+  const token = localStorage.getItem("token");
+  const history = useHistory();
+
+  const routeToCheckout = () => {
+    history.push("/checkout");
+  }
 
   if (!items.length) {
     return (
@@ -133,6 +157,62 @@ const Cart = ({
     <>
       <Box className="cart">
         {/* TODO: CRIO_TASK_MODULE_CART - Display view for each cart item with non-zero quantity */}
+        {items.map((item) => (
+          <Box key={item.productId}>
+            {item.qty > 0 ? (
+              <Box display="flex" alignItems="flex-start" padding="1rem">
+                <Box className="image-container">
+                  <img
+                  src={item.image}
+                  alt={item.name}
+                  width="100%"
+                  height="100%"
+                  />
+                  </Box>
+                  <Box
+                  display="flex"
+                  flexDirection="column"
+                  justifyContent="space-between"
+                  height="6rem"
+                  paddingX="1rem"
+                  >
+                    <div>{item.name}</div>
+                    <Box
+                    display="flex"
+                    justifyContent="space-between"
+                    alignIttems="center"
+                    >
+                      <ItemQuantity
+                      handleAdd={async () => {
+                        await handleQuantity(
+                          token,
+                          items,
+                          products,
+                          item.productId,
+                          item.qty + 1
+                        );
+                      }}
+                      handleDelete={async () => {
+                        await handleQuantity(
+                          token,
+                          items,
+                          products,
+                          item.productId,
+                          item.qty - 1
+                        );
+                      }}
+                      value = {item.qty}
+                      isReadOnly={isReadOnly}
+                      />
+                      <Box padding="0.5rem" fontWeight="700">
+                        ${item.cost}
+                        </Box>
+                    </Box>
+          </Box>
+          </Box>
+        ) : null }
+        </Box>
+        ))}
         <Box
           padding="1rem"
           display="flex"
@@ -159,6 +239,7 @@ const Cart = ({
             variant="contained"
             startIcon={<ShoppingCart />}
             className="checkout-btn"
+            onClick={routeToCheckout}
           >
             Checkout
           </Button>
