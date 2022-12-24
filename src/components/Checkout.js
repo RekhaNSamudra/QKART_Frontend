@@ -495,6 +495,18 @@ const Checkout = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  
+  useEffect(async ()=>{
+    if(token){
+      const x = await getAddresses(token);
+     setAddresses({ ...addresses, all: x })
+     
+    }else{
+ history.push("/login");
+ enqueueSnackbar("You must be logged in to access checkout page",{variant:"warning"})
+ }
+   },[]);
+
   return (
     <>
       <Header />
