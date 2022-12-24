@@ -91,6 +91,66 @@ export const getTotalCartValue = (items = []) => {
  *    If product quantity on cart is to be displayed as read only without the + - options to change quantity
  * 
  */
+ const GetTotalItems = (items = [], readOnly) => {
+
+  let ShippingCharge = 0;
+  let subTotal = getTotalCartValue(items.items)
+  let total = ShippingCharge + subTotal
+
+  return (
+    <>
+      {readOnly === true && (
+
+
+        <Box padding="1rem">
+          <h3>Order Details</h3>
+          <Stack direction="column" alignItems="center"  >
+            <Box display="flex" justifyContent="space-between" alignItems="center" sx={{ width: "100%" }}>
+              <Box paddingBottom="1rem">
+                Products
+          </Box>
+              <Box paddingBottom="1rem">
+                {items.items.length}
+              </Box>
+            </Box>
+
+            <Box display="flex" justifyContent="space-between" alignItems="center" sx={{ width: "100%" }}>
+              <Box paddingBottom="1rem">
+                Sub Total
+        </Box>
+              <Box paddingBottom="1rem">
+                {subTotal}
+              </Box>
+            </Box>
+
+            <Box display="flex" justifyContent="space-between" alignItems="center" sx={{ width: "100%" }}>
+              <Box paddingBottom="1rem">
+                Shipping Charges
+        </Box>
+              <Box paddingBottom="1rem">
+                {ShippingCharge}
+              </Box>
+            </Box>
+
+            <Box display="flex" justifyContent="space-between" alignItems="center" sx={{ width: "100%" }}>
+              <Box paddingBottom="1rem">
+                <h4>
+                  Total
+          </h4>
+              </Box>
+              <Box paddingBottom="1rem">
+                <h4>
+                  {total}
+                </h4>
+              </Box>
+            </Box>
+          </Stack>
+        </Box>
+      )}
+    </>
+  )
+};
+
 const ItemQuantity = ({
   value,
   handleAdd,
@@ -131,6 +191,9 @@ const ItemQuantity = ({
  *    If product quantity on cart is to be displayed as read only without the + - options to change quantity
  * 
  */
+
+
+
 const Cart = ({
   products,
   items = [],
@@ -248,6 +311,10 @@ const Cart = ({
             Checkout
           </Button>
         </Box>
+      </Box>
+      <Box className="cart">
+        <GetTotalItems items={items} readOnly={isReadOnly} />
+        {/* hello */}
       </Box>
     </>
   );
