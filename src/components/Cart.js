@@ -198,16 +198,16 @@ const Cart = ({
   products,
   items = [],
   handleQuantity,
-  hasCheckoutButton = false,
+  // hasCheckoutButton = false,
   isReadOnly = false,
 }) => {
 
   const token = localStorage.getItem("token");
   const history = useHistory();
 
-  const routeToCheckout = () => {
-    history.push("/checkout");
-  }
+  // const routeToCheckout = () => {
+  //   history.push("/checkout");
+  // }
 
   if (!items.length) {
     return (
@@ -306,7 +306,9 @@ const Cart = ({
             variant="contained"
             startIcon={<ShoppingCart />}
             className="checkout-btn"
-            onClick={routeToCheckout}
+            onClick={ () => {
+              history.push("/checkout");
+            }}
           >
             Checkout
           </Button>
@@ -315,7 +317,7 @@ const Cart = ({
       <Box className="cart">
         <GetTotalItems items={items} readOnly={isReadOnly} />
         {/* hello */}
-      </Box>
+      </Box>  
     </>
   );
 };
